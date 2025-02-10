@@ -9,6 +9,7 @@ class_name ScreenReadingEffect
 @export var WORKGROUP_X : int = 8
 @export var WORKGROUP_Y : int = 8
 
+
 var rd: RenderingDevice
 var shader: RID
 var sampler: RID
@@ -148,6 +149,8 @@ func _render_callback(p_effect_callback_type: EffectCallbackType, p_render_data:
 		params.push_back(size.y)
 		# push the current time
 		params.push_back(Time.get_ticks_msec())
+		# push the mosh flag
+		params.push_back(Global.MOSH_FLAG)
 		
 		# when frame is not refreshed
 		if not Global.refresh_frame:

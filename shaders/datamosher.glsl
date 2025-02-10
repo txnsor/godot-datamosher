@@ -13,6 +13,7 @@ layout(set = 4, binding = 0, std430) restrict buffer Params {
     mat4 PROJECTION_MATRIX;
     vec2 SCREEN_SIZE;
     int TIME;
+    float MOSH_FLAG;
 } p;
 
 #define SCALE 21
@@ -47,12 +48,14 @@ void main() {
 
 
     vec4 res;
-    // either refresh the frame or mosh it
-    if (time % 10000 < 100) {
-        res = imageLoad(SCREEN_TEXTURE, xy2);
-    } else {
-        res = imageLoad(PREVIOUS_TEXTURE, xy2);
-    }
+    // // either refresh the frame or mosh it
+    // if (MOSH_FLAG == 1) {
+    //     res = imageLoad(SCREEN_TEXTURE, xy2);
+    // } else {
+    //     res = imageLoad(PREVIOUS_TEXTURE, xy2);
+    // }
+
+    res = (imageLoad(SCREEN_TEXTURE, xy) * vec4(1.0 - p.MOSH_FLAG)) + (imageLoad(PREVIOUS_TEXTURE, xy2) * vec4(p.MOSH_FLAG));
 
     imageStore(SCREEN_TEXTURE, xy, res);
 }
