@@ -15,22 +15,15 @@ layout(set = 4, binding = 0, std430) restrict buffer Params {
     int TIME;
 } p;
 
-#define AMT 2.1
-#define PHI 1.61803398874989484820459
-#define SCALE 9.0
-#define REFRESH_RATE 12500
-#define REFRESH_LIM REFRESH_RATE*0.01
+#define SCALE 21
 
-float gold_noise(in vec2 xy, in float seed){
-       return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
-}
+
+float nrand(float x, float y) {return fract(sin(dot(vec2(x, y), vec2(12.9898, 78.233))) * 43758.5453);}
 
 void main() {
     ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
     int time = p.TIME;
     vec2 size = p.SCREEN_SIZE;
-
-    // vec2 uv = vec2(xy) / p.SCREEN_SIZE;
 
     // the current pixel
     // make sure nothing outside compute space is accessed
@@ -38,27 +31,28 @@ void main() {
         return;
     }
 
-    ivec2 floor_xy = ivec2(vec2(xy)/SCALE)*int(SCALE);
-    float rand_factor = gold_noise(xy, time);
+    // set up xy blocks
+    ivec2 xyr = ivec2(vec2(xy)/SCALE)*SCALE;
+    // set up random noise
+    float n = nrand(time, xyr.x*xyr.y);
 
-    // access screen textures
-    vec4 color = imageLoad(SCREEN_TEXTURE, xy);
-    vec4 motion = imageLoad(VELOCITY_TEXTURE, xy);
+    // access and alter motion vectors
+    vec4 motion = imageLoad(VELOCITY_TEXTURE, xyr);
+    motion = max(abs(motion)-round(n/1.4),0)*sign(motion);
 
-    // get offset
-    ivec2 xy_offset = ivec2(vec2(AMT)*motion.rg*size);
-
-    // get new mapping (uv displacement), but account for black space
-    ivec2 xy2 = ivec2(xy + ivec2(xy_offset));
+    // displace the screen using the motion
+    ivec2 xy2 = ivec2(xy + ivec2(motion.rg*size));
     xy2.x = xy2.x % int(size.x);
     xy2.y = xy2.y % int(size.y);
 
-    vec4 res;
 
-    if (time % REFRESH_RATE < REFRESH_LIM) {
+    vec4 res;
+    // either refresh the frame or mosh it
+    if (time % 10000 < 100) {
         res = imageLoad(SCREEN_TEXTURE, xy2);
     } else {
         res = imageLoad(PREVIOUS_TEXTURE, xy2);
     }
+
     imageStore(SCREEN_TEXTURE, xy, res);
 }

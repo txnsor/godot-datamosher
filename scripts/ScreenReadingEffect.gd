@@ -4,7 +4,7 @@
 extends CompositorEffect
 class_name ScreenReadingEffect
 
-@export var script_path: String = "res://shaders/compute_test.glsl"
+@export var script_path: String = "res://shaders/datamosher.glsl"
 @export var buffer_path: String = "res://shaders/buffer_frame.glsl"
 @export var WORKGROUP_X : int = 8
 @export var WORKGROUP_Y : int = 8

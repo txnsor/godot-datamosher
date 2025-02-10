@@ -1,10 +1,23 @@
 [gd_scene load_steps=16 format=3 uid="uid://ch5ccpawao182"]
 
-[ext_resource type="Script" path="res://scripts/sub_viewport.gd" id="1_24q2c"]
 [ext_resource type="Texture2D" uid="uid://bh1k743nlo1oc" path="res://assets/visual/ground.jpg" id="1_ll4wf"]
 [ext_resource type="PackedScene" uid="uid://b2la5qrkywmwi" path="res://scenes/player.tscn" id="1_n3rr3"]
 [ext_resource type="Texture2D" uid="uid://ciyo0dauo4fvj" path="res://assets/visual/sky.png" id="2_8w77u"]
 [ext_resource type="Script" path="res://scripts/ScreenReadingEffect.gd" id="4_gbpnm"]
+
+[sub_resource type="GDScript" id="GDScript_5mdi2"]
+script/source = "extends SubViewport
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_k7jlg"]
 panorama = ExtResource("2_8w77u")
@@ -73,7 +86,7 @@ handle_input_locally = false
 size = Vector2i(1152, 648)
 size_2d_override_stretch = true
 render_target_update_mode = 0
-script = ExtResource("1_24q2c")
+script = SubResource("GDScript_5mdi2")
 
 [node name="fxGUI" type="Control" parent="."]
 visible = false
