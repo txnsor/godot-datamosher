@@ -14,11 +14,13 @@ layout(set = 4, binding = 0, std430) restrict buffer Params {
     vec2 SCREEN_SIZE;
     int TIME;
     float MOSH_FLAG;
+    float MOSH_DEPTH_FACTOR;
 } p;
 
 #define SCALE 21
+#define DEPTH_FACTOR 25.0
 
-
+// rng
 float nrand(float x, float y) {return fract(sin(dot(vec2(x, y), vec2(12.9898, 78.233))) * 43758.5453);}
 
 void main() {
@@ -46,16 +48,20 @@ void main() {
     xy2.x = xy2.x % int(size.x);
     xy2.y = xy2.y % int(size.y);
 
-
+    // lerp mosh frame with regular frame
     vec4 res;
-    // // either refresh the frame or mosh it
-    // if (MOSH_FLAG == 1) {
-    //     res = imageLoad(SCREEN_TEXTURE, xy2);
-    // } else {
-    //     res = imageLoad(PREVIOUS_TEXTURE, xy2);
-    // }
-
     res = (imageLoad(SCREEN_TEXTURE, xy) * vec4(1.0 - p.MOSH_FLAG)) + (imageLoad(PREVIOUS_TEXTURE, xy2) * vec4(p.MOSH_FLAG));
 
-    imageStore(SCREEN_TEXTURE, xy, res);
+    // set up depth buffer
+    float depth = texelFetch(DEPTH_TEXTURE, xy, 0).x;
+    mat4 inv_proj = inverse(p.PROJECTION_MATRIX);
+    float lin_depth = 1.0 / (depth * inv_proj[2].w + inv_proj[3].w);
+    lin_depth /= p.MOSH_DEPTH_FACTOR;
+
+    // use depth buffer to blend mosh and regular frame
+    vec4 mosh = imageLoad(PREVIOUS_TEXTURE, xy2);
+    vec4 regular = imageLoad(SCREEN_TEXTURE, xy);
+    vec4 blended = mosh*min(1.0, lin_depth) + (regular*(1.0 - min(1.0, lin_depth)));
+    blended = (blended*p.MOSH_FLAG) + (regular*(1.0 - p.MOSH_FLAG));
+    imageStore(SCREEN_TEXTURE, xy, blended);
 }

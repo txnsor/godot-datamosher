@@ -1,5 +1,8 @@
 # screen reading shader setup
 
+# much of this code is based on other documented 
+# code using godots compositor
+
 @tool
 extends CompositorEffect
 class_name ScreenReadingEffect
@@ -149,8 +152,9 @@ func _render_callback(p_effect_callback_type: EffectCallbackType, p_render_data:
 		params.push_back(size.y)
 		# push the current time
 		params.push_back(Time.get_ticks_msec())
-		# push the mosh flag
+		# push the mosh flags
 		params.push_back(Global.MOSH_FLAG)
+		params.push_back(Global.MOSH_DEPTH_FACTOR)
 		
 		# when frame is not refreshed
 		if not Global.refresh_frame:

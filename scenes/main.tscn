@@ -1,9 +1,11 @@
-[gd_scene load_steps=17 format=3 uid="uid://ch5ccpawao182"]
+[gd_scene load_steps=19 format=3 uid="uid://ch5ccpawao182"]
 
+[ext_resource type="Script" path="res://scripts/mosh_timer.gd" id="1_322la"]
 [ext_resource type="Texture2D" uid="uid://bh1k743nlo1oc" path="res://assets/visual/ground.jpg" id="1_ll4wf"]
 [ext_resource type="PackedScene" uid="uid://b2la5qrkywmwi" path="res://scenes/player.tscn" id="1_n3rr3"]
 [ext_resource type="Texture2D" uid="uid://ciyo0dauo4fvj" path="res://assets/visual/sky.png" id="2_8w77u"]
 [ext_resource type="Script" path="res://scripts/ScreenReadingEffect.gd" id="4_gbpnm"]
+[ext_resource type="Shader" path="res://shaders/per_obj_mosh.gdshader" id="6_yaj8j"]
 
 [sub_resource type="GDScript" id="GDScript_5mdi2"]
 script/source = "extends SubViewport
@@ -65,13 +67,17 @@ albedo_texture = ExtResource("1_ll4wf")
 [sub_resource type="BoxMesh" id="BoxMesh_bygux"]
 material = SubResource("StandardMaterial3D_03ihk")
 
-[sub_resource type="Texture2DRD" id="Texture2DRD_joijv"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_83os5"]
+render_priority = 0
+shader = ExtResource("6_yaj8j")
+shader_parameter/mot_dir = null
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jh6vw"]
-albedo_texture = SubResource("Texture2DRD_joijv")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0gfn4"]
+next_pass = SubResource("ShaderMaterial_83os5")
+albedo_color = Color(0.418361, 0.36376, 0.928628, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_uap0k"]
-material = SubResource("StandardMaterial3D_jh6vw")
+material = SubResource("StandardMaterial3D_0gfn4")
 
 [node name="main" type="Node3D"]
 
@@ -105,6 +111,7 @@ color = Color(0.83757, 0.472928, 0.990363, 1)
 
 [node name="main3D" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.3198, 8.55769, 0)
+script = ExtResource("1_322la")
 
 [node name="player" parent="main3D" instance=ExtResource("1_n3rr3")]
 
